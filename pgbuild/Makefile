@@ -3,7 +3,7 @@ INSTALL_PREFIX := $(shell pwd)/../src/pgserver/pginstall/
 BUILD := $(shell pwd)/pgbuild/
 
 .PHONY: all
-all: pgvector postgres
+all: pgvector postgres contrib
 
 ### postgres
 POSTGRES_VERSION := 16.2
@@ -60,6 +60,20 @@ $(INSTALL_PREFIX)/lib/vector.so: $(PGVECTOR_DIR)/Makefile $(INSTALL_PREFIX)/bin/
 
 .PHONY: pgvector
 pgvector: postgres $(INSTALL_PREFIX)/lib/vector.so
+
+### contrib extensions (pg_trgm, etc.)
+# contrib source is included in the PostgreSQL tarball — no extra download needed.
+# Build all contrib modules in one pass for forward compatibility.
+# To build only pg_trgm, replace contrib target path with contrib/pg_trgm.
+CONTRIB_MARKER := $(INSTALL_PREFIX)/lib/postgresql/pg_trgm.so
+
+$(CONTRIB_MARKER): $(INSTALL_PREFIX)/bin/postgres
+	unset MAKELEVEL && unset MAKEFLAGS && unset MFLAGS \
+		&& $(MAKE) -C $(POSTGRES_BLD)/contrib PG_CONFIG=$(INSTALL_PREFIX)/bin/pg_config -j \
+		&& $(MAKE) -C $(POSTGRES_BLD)/contrib PG_CONFIG=$(INSTALL_PREFIX)/bin/pg_config install
+
+.PHONY: contrib
+contrib: postgres $(CONTRIB_MARKER)
 
 ### other
 .PHONY: clean clean-all
