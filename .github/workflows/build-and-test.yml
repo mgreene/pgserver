@@ -21,7 +21,7 @@ jobs:
             deployment-target: "10.9"
           - os: macos-latest
             arch: arm64
-            deployment-target: "11.0"
+            deployment-target: "15.4"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
