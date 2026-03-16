@@ -62,7 +62,7 @@ jobs:
       - name: Build wheels
         env:
           CIBW_ARCHS: ${{ matrix.arch }}
-          CIBW_SKIP: pp* cp38-* cp39-* cp310-* cp311-*
+          CIBW_BUILD: cp312-*
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment-target }}
         run: python -m cibuildwheel --output-dir wheelhouse
       - uses: actions/upload-artifact@v4
